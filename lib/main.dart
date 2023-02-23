@@ -1,6 +1,27 @@
-void main() {}
+void main() {
+  FrutaCitrica limao = FrutaCitrica(
+      nome: "limao",
+      cor: "verde",
+      peso: 30.0,
+      diasDesdeColheita: 10,
+      nivelcitrico: 7,
+      estaMadura: "não sei");
+
+  limao.exibir();
+
+  print(limao.maduro(10));
+
+  limao.colher();
+}
 
 //! classes
+
+abstract class Bolo {
+  void colher();
+  void preparar();
+  void servir();
+}
+
 class Alimento {
   //atributos
   String nome;
@@ -17,28 +38,53 @@ class Alimento {
 }
 
 // extendemos a classe alimento para fruta ou seja, a fruta herdou tudo da classe alimento
-class Fruta extends Alimento {
+class Fruta extends Alimento implements Bolo {
   int diasDesdeColhieta;
-  String? estaMadura;
+  String estaMadura;
 
   Fruta({
     required String nome,
     required String cor,
     required double peso,
     required this.diasDesdeColhieta,
-    this.estaMadura,
+    required this.estaMadura,
   }) : super(
           nome: nome,
           cor: cor,
           peso: peso,
         ); //super quer dizer que pegamos o atributo da classe alimento
 
-  void maduro(int diasparamadurar) {
-    estaMadura = (diasDesdeColhieta <= diasparamadurar) ? "sim" : "não";
+  String maduro(int diasparamadurar) {
+    return estaMadura = (diasDesdeColhieta <= diasparamadurar) ? "sim" : "não";
+  }
+
+  // o override sobescreve o metodo criado na classe alimento
+  @override
+  void exibir() {
+    print("$nome, $cor, $peso,$diasDesdeColhieta, $estaMadura");
+  }
+
+  @override
+  colher() {
+    if (estaMadura == "sim") {
+      print("podemos colher esta $nome");
+      return;
+    }
+    print("pegue outra $nome, essa não está boa para fazer o bolo");
+  }
+
+  @override
+  preparar() {
+    print("descascar $nome, fazer a massa e colocar para assar");
+  }
+
+  @override
+  servir() {
+    print("colocar no prato e servir o bolo de $nome");
   }
 }
 
-class FrutaCitrica extends Fruta implements Suco {
+class FrutaCitrica extends Fruta /*OCULTO implements Bolo*/ {
   int nivelcitrico;
 
   FrutaCitrica(
@@ -47,7 +93,7 @@ class FrutaCitrica extends Fruta implements Suco {
       required double peso,
       required int diasDesdeColheita,
       required this.nivelcitrico,
-      String? estaMadura})
+      required String estaMadura})
       : super(
             nome: nome,
             cor: cor,
@@ -62,25 +108,6 @@ class FrutaCitrica extends Fruta implements Suco {
     }
     print("até que ta suave: nivel citrico é $nivelcitrico");
   }
-
-  @override
-  colher() {
-    if (estaMadura == "sim") {
-      print("podemos colher esta $nome");
-      return;
-    }
-    print("pegue outra $nome, essa não está boa para fazer suco");
-  }
-
-  @override
-  preparar() {
-    print("descascar $nome, bater no liquidificador com agua e colocar açucar");
-  }
-
-  @override
-  servir() {
-    print("colocar no copo e servir o suco de $nome");
-  }
 }
 
 class FrutaDoce extends Fruta {
@@ -91,7 +118,7 @@ class FrutaDoce extends Fruta {
       required double peso,
       required int diasDesdeColheita,
       required this.nivelDoce,
-      String? estaMadura})
+      required String estaMadura})
       : super(
             nome: nome,
             cor: cor,
@@ -106,9 +133,28 @@ class FrutaDoce extends Fruta {
     print("não ta doce não");
     return;
   }
+
+  @override
+  void colher() {
+    print("teste");
+    super.colher(); // pega a função colher da classe fruta
+  }
+
+  @override
+  void preparar() {
+    print("lavar a $nome");
+    super.preparar();
+  }
+
+  @override
+  void servir() {
+    super.servir();
+    print("bom apetite");
+  }
 }
 
-class Legumes extends Alimento {
+// estamos implementando a classe abstrata Bolo na classe legumes.
+class Legumes extends Alimento implements Bolo {
   bool isPrecisaCozinhar;
 
   Legumes({
@@ -117,11 +163,31 @@ class Legumes extends Alimento {
     required double peso,
     required this.isPrecisaCozinhar,
   }) : super(nome: nome, cor: cor, peso: peso);
+
+  void cozinhar() {
+    if (isPrecisaCozinhar == true) {
+      print("cozinhando $nome");
+      return;
+    }
+    print("não precisa cozinhar o(a) $nome");
+    return;
+  }
+
+  @override
+  void colher() {
+    print("colher a $nome, lavar e cozinhar");
+  }
+
+  @override
+  void preparar() {
+    print("preparar a massa, colocar na forma e levar ao forno para assar");
+  }
+
+  @override
+  void servir() {
+    print("colocar no prato e servir o bolo de $nome");
+  }
 }
 
-//a classe abstrata podemos inserir ela em todas as classe sendo que em cada classe ela vai fazer uma coisa diferente.
-abstract class Suco {
-  colher();
-  preparar();
-  servir();
-}
+//a classe abstrata podemos inserir ela em todas as classe sendo que em cada classe ela vai fazer um processo diferente.
+
